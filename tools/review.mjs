@@ -3,9 +3,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {spawn,spawnSync} from 'node:child_process';
-import {args,launch,openFilm} from './lib/browser.mjs';
+import {args,launch,openFilm,DEFAULT_ENGINE} from './lib/browser.mjs';
 const a=args(process.argv.slice(2)),film=a._[0];
-if(!film){console.error('usage: node review.mjs <film.html> [--out directory] [--engine firefox] [--mp4 render.mp4 [--from s] [--floor %] [--hold s]]');process.exit(1);}
+if(!film){console.error('usage: node review.mjs <film.html> [--out directory] [--engine chromium] [--mp4 render.mp4 [--from s] [--floor %] [--hold s]]');process.exit(1);}
 
 // Runs of a render where the picture stays as it was. Frames are box-averaged to 270 px grey, which
 // descreens the halftone: a pinned screen reads as static and a tone change as a change. A pixel
@@ -46,7 +46,7 @@ async function stillness(mp4,from,floor,hold){
   return {fps,frames:n,from,floorPct:floor,holdSeconds:hold,changed,runs};
 }
 const out=path.resolve(a.out||`../out/${path.basename(path.dirname(path.resolve(film)))}-review`);
-const browser=await launch(a.engine||'firefox');
+const browser=await launch(a.engine||DEFAULT_ENGINE);
 let duration,shots,notes=[],times;
 try {
   const opened=await openFilm(browser,film);duration=opened.duration;
@@ -94,6 +94,6 @@ fs.writeFileSync(path.join(out,'review.json'),JSON.stringify({duration,shots,not
 if(shots.length)console.table(shots.map(({id,seconds,action,transition,changePct})=>({id,seconds,action,transition,...(still&&{changePct})})));
 notes.forEach(n=>console.log(`Review: ${n}`));
 const shoot=fileURLToPath(new URL('./shoot.mjs',import.meta.url));
-const r=spawnSync(process.execPath,[shoot,path.resolve(film),'--times',times.join(','),'--engine',a.engine||'firefox','--out',out,'--sheet','--cols','3','--cell','340'],{stdio:'inherit'});
+const r=spawnSync(process.execPath,[shoot,path.resolve(film),'--times',times.join(','),'--engine',a.engine||DEFAULT_ENGINE,'--out',out,'--sheet','--cols','3','--cell','340'],{stdio:'inherit'});
 if(r.error)throw r.error;
 process.exit(r.status??1);

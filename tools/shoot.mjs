@@ -4,7 +4,7 @@
  *   node shoot.mjs <film.html> --times 0.3,1.8,3.0
  *   node shoot.mjs <film.html> --range 13.4:14.4:0.25 --sheet
  *   node shoot.mjs <film.html> --around 6.0 --window 0.5 --step 0.25 --sheet
- *   node shoot.mjs <film.html> --engine firefox --size 1080
+ *   node shoot.mjs <film.html> --engine chromium --size 1080
  *
  * Times come from window.__riso.seek(t), so a still is the exact frame the
  * renderer produces at t -- not a realtime sample that may have drifted.

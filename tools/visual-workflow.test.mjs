@@ -60,7 +60,7 @@ const c=document.querySelector('canvas'),g=c.getContext('2d');window.__riso={dur
 </script>`);
 const png=path.join(temp,'native.png');run('still.mjs',[native,'--out',png]);
 const bytes=fs.readFileSync(png);assert.equal(bytes.readUInt32BE(16),320);assert.equal(bytes.readUInt32BE(20),240);
-const browser=await launch('firefox');
+const browser=await launch();
 try{
   for(const kind of ['film','still']){
     const out=path.join(temp,kind,'index.html');

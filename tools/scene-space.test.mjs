@@ -4,7 +4,7 @@ import crypto from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {launch,openFilm} from './lib/browser.mjs';
 const file=fileURLToPath(new URL('../studies/scene-space.html',import.meta.url));
-const browser=await launch('firefox'),hashes={},report={rates:[],performance:{}};
+const browser=await launch(),hashes={},report={rates:[],performance:{}};
 try{
   for(const rate of [1,.5,2]){
     const {page,duration,errors}=await openFilm(browser,file,{query:`rate=${rate}`});

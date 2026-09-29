@@ -10,7 +10,7 @@
  * `review.mjs --mp4` measures stillness.
  */
 import crypto from 'node:crypto';
-import { launch, openFilm, frameAt, args } from './lib/browser.mjs';
+import { launch, openFilm, frameAt, args, CHECKED } from './lib/browser.mjs';
 
 const a = args(process.argv.slice(2));
 const film = a._[0];
@@ -49,8 +49,8 @@ async function diagnose(browser, t, candidates) {
   return `t=${t} matches its fresh-page draw after each single candidate; the failure needs a longer seek history`;
 }
 
-const chromeHashes = {};
-for (const engine of ['chromium', 'firefox']) {
+const firstHashes = {};
+for (const engine of CHECKED) {
   const browser = await launch(engine);
   const { page, duration, errors } = await openFilm(browser, film, { size });
   if (!(duration > 0 && Number.isFinite(duration))) throw Error('duration must be finite and positive');
@@ -87,10 +87,10 @@ for (const engine of ['chromium', 'firefox']) {
   const reversed = [...times].reverse(), fresh = await drawFresh(browser, reversed);
   reversed.forEach((t, i) => { if (fresh[i] !== base[t]) failAt(t, `t=${t} differs on a fresh page drawn in reverse order`); });
   if (bad.length) console.log(`  DIAGNOSIS ${await diagnose(browser, bad[0], [...times, ...wander(bad[0])])}`);
-  if (engine === 'chromium') Object.assign(chromeHashes, base);
+  if (engine === CHECKED[0]) Object.assign(firstHashes, base);
   else {
-    const same = times.filter(t => chromeHashes[t] === base[t]).length;
-    console.log(`  cross-engine: ${same}/${times.length} frames pixel-identical to chromium`);
+    const same = times.filter(t => firstHashes[t] === base[t]).length;
+    console.log(`  cross-engine: ${same}/${times.length} frames pixel-identical to ${CHECKED[0]}`);
   }
   console.log(`  ${times.map(t => `${t}:${base[t].slice(0, 6)}`).join('  ')}`);
   if (errors.length) fail(`page error during inspection: ${errors.at(-1)}`);
