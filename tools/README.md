@@ -8,7 +8,7 @@ sample that may have drifted.
 
 ```
 npm install        # playwright-core, ffmpeg-static
-npm run setup      # downloads the Chromium and Firefox builds this playwright-core expects
+npm run setup      # downloads the Chromium build this playwright-core expects
 npm test           # visual-kit, workflow and scene-space self-tests
 ```
 
@@ -43,12 +43,16 @@ matches arriving there by playback. That is what makes a film inspectable and th
 | `review.mjs <html> [--mp4 render.mp4 [--from s] [--hold 0.5] [--floor 0.1]]` | Shot sheet and JSON timing report from `__riso.shots`, else twelve samples. `--mp4` adds stillness: each shot's median changed area per frame, and every run of at least `--hold` s where frames stay within `--floor` % of the run's first frame (descreened), labelled with the shots' actions. `--from` offsets a range render. | Repeated-transition and stillness notes call for judgement at playback speed, not errors; a slow camera creep passes unflagged. |
 | `shoot.mjs <html> --times\|--range\|--around t --window w [--sheet]` | Numbered stills and a labelled contact sheet. It never clears `--out`, so give each run its own directory before globbing it. | Read the sheet around every transition. |
 | `still.mjs <html> --at t --out x.png` | Native canvas PNG, checked for repeatability. | Prints native dimensions. `--size` on screenshot tools scales capture, not art. |
-| `render.mjs <html> [--from a --to b] --fps 30 --size 1080 --engine firefox` | Seeks every frame into ffmpeg (no dropped or duplicated frames); muxes `renderAudio()` on full renders. | Prints muxed loudness and true peak. |
+| `render.mjs <html> [--from a --to b] --fps 30 --size 1080 [--engine chromium]` | Seeks every frame into ffmpeg (no dropped or duplicated frames); muxes `renderAudio()` on full renders. | Prints muxed loudness and true peak. |
 | `audio.mjs <html> [--twice] [--marks a,b] [--around t --window w] [--ffmpeg]` | Renders the score alone in seconds: WAV, JSON report and sheet (waveform, log spectrogram, BS.1770 loudness, per-mark sync). | No `FAIL` lines; `--twice` proves determinism; `--around` lists every discontinuity in its window. |
 
 Every tool opens works through `lib/browser.mjs`, which aborts any request that is not `file:`,
 `data:`, `blob:` or `about:` and reports it as a page error: a deliverable that reaches the
 network fails `verify`, `still` and `review`, and warns in `shoot`, `render` and `audio`.
 
-Add `--engine firefox` to check the primary browser. Outputs land in `out/` at the repo root.
+This fork runs Chromium only; `RISO_ENGINES=chromium,firefox` and `npm run setup` add Firefox,
+whose audio renders are byte-identical. A tool asked for an engine that is not enabled prints a
+note and uses the first one. Without a downloaded Chromium the tools fall back to the installed
+Google Chrome; `RISO_CHROMIUM_PATH` names any other binary and makes `npm run setup` skip the
+download. Outputs land in `out/` at the repo root.
 Run `npm test` after changing anything in `tools/lib/`. No tool certifies artistic quality.

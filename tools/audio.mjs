@@ -23,7 +23,7 @@ import * as A from './lib/audio.mjs';
 
 const a = args(process.argv.slice(2));
 const film = a._[0];
-if (!film && !a.wav) { console.error('usage: node audio.mjs <film.html> [--marks a,b] [--around t --window w] [--twice] [--ffmpeg] [--engine firefox]'); process.exit(1); }
+if (!film && !a.wav) { console.error('usage: node audio.mjs <film.html> [--marks a,b] [--around t --window w] [--twice] [--ffmpeg] [--engine chromium]'); process.exit(1); }
 
 const engine = a.engine || 'chromium';
 const target = Number(a.target ?? -16), ceiling = Number(a.ceiling ?? -1);
@@ -77,7 +77,7 @@ if (a.wav) {
       // graph shows a few LSB across a few percent of samples; real unseeded
       // state shows up 40 dB louder than that.
       const lsb = 1 / 32768, share = n / (x.length * x.channels);
-      if (maxDiff <= lsb * 4.5) { determinism = 'LSB jitter'; info(`deterministic to a few 16-bit LSB: ${n} samples (${(share * 100).toFixed(1)}%) differ by up to ${Math.round(maxDiff / lsb)} step(s) (${engine} summation-order jitter, inaudible); use --engine firefox for byte-identical output`); }
+      if (maxDiff <= lsb * 4.5) { determinism = 'LSB jitter'; info(`deterministic to a few 16-bit LSB: ${n} samples (${(share * 100).toFixed(1)}%) differ by up to ${Math.round(maxDiff / lsb)} step(s) (${engine} summation-order jitter, inaudible); Firefox renders byte-identical if RISO_ENGINES includes it`); }
       else { determinism = 'NON-DETERMINISTIC'; fail(`two cold renders differ: ${n} samples (${(share * 100).toFixed(1)}%), max ${A.db(maxDiff).toFixed(1)} dBFS; a synthesis path is consuming unseeded state`); }
     }
   }

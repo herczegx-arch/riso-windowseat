@@ -19,12 +19,21 @@ node verify.mjs ../films/<name>/index.html
 node review.mjs ../films/<name>/index.html [--mp4 ../out/<name>.mp4]
 node shoot.mjs ../films/<name>/index.html --range 6.6:6.9:0.0333333333 --sheet
 node still.mjs ../prints/<name>/index.html --at 0 --out ../out/<name>.png
-node render.mjs ../films/<name>/index.html --fps 30 --size 1080 --engine firefox
+node render.mjs ../films/<name>/index.html --fps 30 --size 1080
 node audio.mjs ../films/<name>/index.html --twice --marks 6,13.9
 ```
 
 Read every sheet you generate. Range renders are silent; full exports mux `renderAudio()`.
-Firefox is the primary engine. `out/` is disposable and git-ignored.
+`out/` is disposable and git-ignored.
+
+This fork runs Chromium only. The shipped docs, skills and film records still name Firefox as
+the primary engine; read `--engine firefox` there as the default engine (the tools print a note
+and use Chromium). Chromium audio renders differ by a few 16-bit LSB between runs, which
+`audio.mjs --twice` reports as jitter, not failure; only Firefox is byte-identical.
+`RISO_ENGINES=chromium,firefox` plus `npm run setup` brings Firefox back. Without a downloaded
+build the tools use the installed Google Chrome; `RISO_CHROMIUM_PATH` names any other binary.
+In Claude Code on the web the Playwright download hosts are blocked, so skip `npm run setup`
+and use the preinstalled build: `export RISO_CHROMIUM_PATH=/opt/pw-browsers/chromium`.
 
 ## Invariants
 

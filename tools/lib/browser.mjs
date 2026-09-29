@@ -4,16 +4,37 @@ import url from 'node:url';
 
 export const ENGINES = { chromium, firefox };
 
-export async function launch(engine = 'chromium') {
-  const type = ENGINES[engine];
-  if (!type) throw new Error(`unknown engine "${engine}" (use: ${Object.keys(ENGINES).join(', ')})`);
+// Engines this checkout runs; the first is the default. Chromium only unless RISO_ENGINES names
+// more, e.g. RISO_ENGINES=chromium,firefox brings back the two-engine checks (rerun setup).
+export const CHECKED = (process.env.RISO_ENGINES || 'chromium').split(',').map(s => s.trim()).filter(Boolean);
+export const DEFAULT_ENGINE = CHECKED[0];
+
+export async function launch(engine = DEFAULT_ENGINE) {
+  for (const e of [engine, ...CHECKED]) {
+    if (!ENGINES[e]) throw new Error(`unknown engine "${e}" (use: ${Object.keys(ENGINES).join(', ')})`);
+  }
+  if (!CHECKED.includes(engine)) {
+    // Docs and skills still ask for --engine firefox; say so instead of failing.
+    console.error(`note: ${engine} is not enabled (RISO_ENGINES=${CHECKED.join(',')}), using ${DEFAULT_ENGINE}`);
+    engine = DEFAULT_ENGINE;
+  }
+  // RISO_CHROMIUM_PATH names a Chromium or Chrome binary to use instead of the downloaded build.
+  const exe = engine === 'chromium' ? process.env.RISO_CHROMIUM_PATH : undefined;
   try {
-    return await type.launch();
+    return await ENGINES[engine].launch(exe ? { executablePath: exe } : {});
   } catch (e) {
-    if (/Executable doesn't exist/.test(e.message)) {
-      throw new Error(`${engine} is not installed for playwright-core; run \`npm run setup\` in tools/`);
+    if (!/executable doesn't exist/i.test(e.message)) throw e;
+    if (engine === 'chromium' && !exe) {
+      // No downloaded build: fall back to the Google Chrome installed on this machine.
+      try {
+        const browser = await chromium.launch({ channel: 'chrome' });
+        console.error('note: no playwright Chromium, using the installed Google Chrome');
+        return browser;
+      } catch {}
     }
-    throw e;
+    throw new Error(exe
+      ? `RISO_CHROMIUM_PATH=${exe} does not exist`
+      : `${engine} is not installed for playwright-core; run \`npm run setup\` in tools/, install Google Chrome or set RISO_CHROMIUM_PATH`);
   }
 }
 

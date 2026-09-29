@@ -2,10 +2,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import {args,launch,openFilm} from './lib/browser.mjs';
+import {args,launch,openFilm,DEFAULT_ENGINE} from './lib/browser.mjs';
 const a=args(process.argv.slice(2)),film=a._[0],t=Number(a.at??0);
-if(!film||!a.out||!Number.isFinite(t)){console.error('usage: node still.mjs <index.html> --at 0 --out ../out/name.png [--engine firefox]');process.exit(1);}
-const browser=await launch(a.engine||'firefox');
+if(!film||!a.out||!Number.isFinite(t)){console.error('usage: node still.mjs <index.html> --at 0 --out ../out/name.png [--engine chromium]');process.exit(1);}
+const browser=await launch(a.engine||DEFAULT_ENGINE);
 try {
   const {page,duration,errors}=await openFilm(browser,film);
   if(t<0||t>duration)throw Error(`--at must be within 0..${duration}`);
