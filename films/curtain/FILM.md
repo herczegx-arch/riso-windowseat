@@ -81,6 +81,13 @@ curtain's last opening reveals no production, only the lamp that keeps the stage
 - Sheets inspected: key moments of every passage; a 0.1 s strip through the fast opening at
   12.6-14.6 s (hem trails, then rings down); a 1/30 s strip through the first year slide.
 - Leak probe as above. Render cost about 0.2 s/frame in Chromium.
+- Silent animatic `out/curtain-v1-animatic.mp4` (not in git): decodes without error, 80.00 s,
+  2400 frames, 1080², h264 at about 13 Mb/s (the halftone grain compresses poorly; a 720 px
+  CRF 25 preview is 21 MB). `review.mjs --mp4`: median 3.2% of pixels change per frame; the only
+  held stretches are the final ghost-light hold (77.7-80 s), intended; it flags seven
+  consecutive curtain handoffs, which is the concept and its main risk. Pop scan (360 px,
+  blurred): no hard cuts, no flagged frames, largest adjacent difference 3.1/255.
+- Not yet reviewed: continuous playback at speed by a person; nothing here judges pace.
 
 ## Remaining work
 
