@@ -58,6 +58,7 @@ and use the preinstalled build: `export RISO_CHROMIUM_PATH=/opt/pw-browsers/chro
 | `films/window-seat/` | Showcase: sampled piano, piano-bank rebuild. |
 | `films/roost/`, `held/`, `nonpareil/`, `eclosion/` | Sampled-score films: starlings, kite, marbling, monarch eclosion. |
 | `films/passenger/` | Kit-scored film: a fog doodle comes alive. |
+| `films/curtain/` | Work in progress: Window Seat's fixed frame on a stage; portal, traveller curtain, sliding years. Placeholders until the user's photos. |
 | `films/lumen/`, `films/emergence/` | 28 s shorts in the Resonance form. |
 | `prints/` | Cabinet, Sceneries and Workings; workings donates the print kit. |
 | `docs/` | The brief and craft docs; `brief.md` tables which to read when. |
